@@ -403,7 +403,7 @@ int main(int argc, char* argv[])
                 dwFailCount++;
         }
 
-        wprintf(L"\n[*] Summary: %lu Succeeded, %lu Failed, %lu Skipped", dwSuccessCount, dwFailCount, dwSkipCount);
+        wprintf(L"\n[*] Summary: %lu Succeeded, %lu Failed, %lu Skipped\n", dwSuccessCount, dwFailCount, dwSkipCount);
 
         nResult = (dwSuccessCount > 0) ? 0 : -1;
     }
